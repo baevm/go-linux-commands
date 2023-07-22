@@ -8,6 +8,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/dezzerlol/go-linux-commands/internal/color"
 	"github.com/spf13/cobra"
 )
 
@@ -18,11 +19,6 @@ type Result struct {
 }
 
 var (
-	cGreen  = "\033[32m"
-	cCyan   = "\033[36m"
-	cPurple = "\033[35m"
-	cReset  = "\033[0m"
-
 	hiddenPath = '.'
 )
 
@@ -31,7 +27,7 @@ var (
 	lineNumbers bool
 	// Output line count
 	lineCount bool
-	// recursive search in directory
+	// Recursive search in directory
 	recursive bool
 )
 
@@ -41,7 +37,6 @@ func init() {
 	GrepCmd.Flags().BoolVarP(&recursive, "recursive", "r", false, "Recursive search in directory")
 }
 
-// TODO: Add recursive search in whole directory
 var GrepCmd = &cobra.Command{
 	Use:     "grep [PATTERN] [FILE]",
 	Short:   "Grep searches for pattern in given file",
@@ -77,13 +72,13 @@ var GrepCmd = &cobra.Command{
 
 			// Add line numbers where pattern is matched
 			if lineNumbers {
-				lineNum := colorStr(v.lineNum, cCyan)
+				lineNum := color.ColorStr(v.lineNum, color.Cyan)
 				output = fmt.Sprintf("%v: %s", lineNum, output)
 			}
 
 			// Add file path
 			if recursive {
-				path := colorStr(v.path, cPurple)
+				path := color.ColorStr(v.path, color.Purple)
 				output = fmt.Sprintf("%v:%s", path, output)
 			}
 
@@ -188,11 +183,7 @@ func colorizePattern(line, pattern string) string {
 	// cut first part of string
 	// add color to given pattern
 	// combine with end of string
-	coloredStr := line[:wordIdx] + colorStr(line[wordIdx:endIdx], cGreen) + line[endIdx:]
+	coloredStr := line[:wordIdx] + color.ColorStr(line[wordIdx:endIdx], color.Green) + line[endIdx:]
 
 	return coloredStr
-}
-
-func colorStr(str interface{}, color string) string {
-	return fmt.Sprintf("%s%v%s", color, str, cReset)
 }
