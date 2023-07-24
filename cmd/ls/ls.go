@@ -4,11 +4,13 @@ import (
 	"fmt"
 	"io/fs"
 	"log"
+	"math"
 	"os"
 	"os/user"
 	"path/filepath"
 	"strings"
 	"syscall"
+	"text/tabwriter"
 
 	"github.com/dezzerlol/go-linux-commands/internal/color"
 	"github.com/spf13/cobra"
@@ -19,6 +21,8 @@ var (
 	all bool
 	// Use long listing format
 	long bool
+	// File sizes in readable readable format
+	readable bool
 )
 
 var (
@@ -32,7 +36,7 @@ type File struct {
 	links            int
 	user             string
 	group            string
-	size             int
+	size             int64
 	modificationDate string
 	name             string
 }
@@ -40,6 +44,7 @@ type File struct {
 func init() {
 	LsCmd.Flags().BoolVarP(&long, "long", "l", false, "Use long listing format")
 	LsCmd.Flags().BoolVarP(&all, "all", "a", false, "Do not ignore entries starting with .")
+	LsCmd.Flags().BoolVarP(&readable, "readable", "r", false, "Human readable file size")
 }
 
 // BUG: panic when trying to read files like swapfile.sys
@@ -68,25 +73,35 @@ var LsCmd = &cobra.Command{
 			log.Fatal(err)
 		}
 
+		writer := tabwriter.NewWriter(os.Stdout, 0, 0, 2, ' ', tabwriter.TabIndent)
+
 		for _, f := range files {
-			output := fmt.Sprintf("%s  ", f.name)
+			output := fmt.Sprintf("%s\t", f.name)
+			var fileSize interface{}
+
+			if readable {
+				fileSize = prettyByteSize(int(f.size))
+			} else {
+				fileSize = f.size
+			}
 
 			if long {
-				output = fmt.Sprintf("%s %s %v %s %s %4v\t %s %s \n",
+				output = fmt.Sprintf("%s\t%s\t%v\t%s\t%s\t%v\t%s\t%s",
 					f.ftype,
 					f.permission,
 					f.links,
 					f.group,
 					f.user,
-					f.size,
+					fileSize,
 					f.modificationDate,
 					output)
 			}
 
-			fmt.Print(output)
+			fmt.Fprintln(writer, output)
 		}
 
-		fmt.Print("\n")
+		fmt.Fprint(writer, "\n")
+		writer.Flush()
 	},
 }
 
@@ -140,12 +155,12 @@ func listFiles(path string) ([]File, error) {
 		}
 
 		result = append(result, File{
-			ftype:            string(ftype),
+			ftype:            ftype,
 			permission:       permission,
 			links:            linksCount,
 			group:            group.Name,
 			user:             owner.Username,
-			size:             int(info.Size()),
+			size:             info.Size(),
 			modificationDate: lastModification,
 			name:             fileName,
 		})
@@ -183,4 +198,15 @@ func getFileOwners(info fs.FileInfo) (*user.User, *user.Group, error) {
 	}
 
 	return owner, group, nil
+}
+
+func prettyByteSize(b int) string {
+	bf := float64(b)
+	for _, unit := range []string{"", "Ki", "Mi", "Gi", "Ti", "Pi", "Ei", "Zi"} {
+		if math.Abs(bf) < 1024.0 {
+			return fmt.Sprintf("%3.1f%sB", bf, unit)
+		}
+		bf /= 1024.0
+	}
+	return fmt.Sprintf("%.1fYiB", bf)
 }
