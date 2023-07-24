@@ -1,0 +1,3 @@
+{
+    "go.buildTags": "windows,linux" // fix for build tags disabling autocomplete
+}

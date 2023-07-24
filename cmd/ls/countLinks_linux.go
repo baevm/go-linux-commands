@@ -1,5 +1,5 @@
-//go:build windows
-// +build windows
+//go:build !windows
+// +build !windows
 
 package ls
 
@@ -9,27 +9,36 @@ import (
 	"log"
 	"os"
 	"os/user"
+	"syscall"
 )
 
-// syscall.Stat_t linux = syscall.Win32FileAttributeData on windows
-// fix for l8r
 func countLinks(dirPath string) (int, error) {
-	f, err := os.Open(os.Args[1])
-	if err != nil {
-		panic(err)
-	}
-	list, err := f.Readdirnames(-1)
-	f.Close()
+	fi, err := os.Stat(dirPath)
 
-	return len(list), err
+	if err != nil {
+		fmt.Println(err)
+		return 0, err
+	}
+
+	nlink := int(0)
+
+	if sys := fi.Sys(); sys != nil {
+		if stat, ok := sys.(*syscall.Stat_t); ok {
+			nlink = int(stat.Nlink)
+		}
+	}
+
+	return nlink, err
 }
 
 func getFileOwners(info fs.FileInfo) (*user.User, *user.Group, error) {
 	var UID int
 	var GID int
 
-	UID = os.Getuid()
-	GID = os.Getgid()
+	if stat, ok := info.Sys().(*syscall.Stat_t); ok {
+		UID = int(stat.Uid)
+		GID = int(stat.Gid)
+	}
 
 	group, err := user.LookupGroupId(fmt.Sprintf("%d", GID))
 

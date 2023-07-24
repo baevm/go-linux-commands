@@ -2,14 +2,11 @@ package ls
 
 import (
 	"fmt"
-	"io/fs"
 	"log"
 	"math"
 	"os"
-	"os/user"
 	"path/filepath"
 	"strings"
-	"syscall"
 	"text/tabwriter"
 
 	"github.com/dezzerlol/go-linux-commands/internal/color"
@@ -167,37 +164,6 @@ func listFiles(path string) ([]File, error) {
 	}
 
 	return result, err
-}
-
-func getFileOwners(info fs.FileInfo) (*user.User, *user.Group, error) {
-	var UID int
-	var GID int
-
-	if stat, ok := info.Sys().(*syscall.Stat_t); ok {
-		UID = int(stat.Uid)
-		GID = int(stat.Gid)
-	} else {
-		// we are not in linux, this won't work anyway in windows,
-		// but maybe you want to log warnings
-		UID = os.Getuid()
-		GID = os.Getgid()
-	}
-
-	group, err := user.LookupGroupId(fmt.Sprintf("%d", GID))
-
-	if err != nil {
-		log.Println(err)
-		return nil, nil, err
-	}
-
-	owner, err := user.LookupId(fmt.Sprintf("%d", UID))
-
-	if err != nil {
-		log.Println(err)
-		return nil, nil, err
-	}
-
-	return owner, group, nil
 }
 
 func prettyByteSize(b int) string {
