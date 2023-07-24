@@ -2,11 +2,12 @@ package cmd
 
 import (
 	"log"
-	"os"
 
 	"github.com/dezzerlol/go-linux-commands/cmd/grep"
 	"github.com/dezzerlol/go-linux-commands/cmd/ls"
+	"github.com/dezzerlol/go-linux-commands/cmd/mkdir"
 	"github.com/dezzerlol/go-linux-commands/cmd/pwd"
+	"github.com/dezzerlol/go-linux-commands/cmd/rmdir"
 	"github.com/spf13/cobra"
 )
 
@@ -21,9 +22,10 @@ func Execute() {
 	RootCmd.AddCommand(ls.Cmd)
 	RootCmd.AddCommand(grep.Cmd)
 	RootCmd.AddCommand(pwd.Cmd)
+	RootCmd.AddCommand(mkdir.Cmd)
+	RootCmd.AddCommand(rmdir.Cmd)
 
 	if err := RootCmd.Execute(); err != nil {
-		log.Println(err)
-		os.Exit(1)
+		log.Fatal(err)
 	}
 }
