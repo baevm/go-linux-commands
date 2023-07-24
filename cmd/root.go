@@ -6,6 +6,7 @@ import (
 
 	"github.com/dezzerlol/go-linux-commands/cmd/grep"
 	"github.com/dezzerlol/go-linux-commands/cmd/ls"
+	"github.com/dezzerlol/go-linux-commands/cmd/pwd"
 	"github.com/spf13/cobra"
 )
 
@@ -17,8 +18,9 @@ var RootCmd = &cobra.Command{
 }
 
 func Execute() {
-	RootCmd.AddCommand(ls.LsCmd)
-	RootCmd.AddCommand(grep.GrepCmd)
+	RootCmd.AddCommand(ls.Cmd)
+	RootCmd.AddCommand(grep.Cmd)
+	RootCmd.AddCommand(pwd.Cmd)
 
 	if err := RootCmd.Execute(); err != nil {
 		log.Println(err)

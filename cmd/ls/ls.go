@@ -42,13 +42,13 @@ type File struct {
 }
 
 func init() {
-	LsCmd.Flags().BoolVarP(&long, "long", "l", false, "Use long listing format")
-	LsCmd.Flags().BoolVarP(&all, "all", "a", false, "Do not ignore entries starting with .")
-	LsCmd.Flags().BoolVarP(&readable, "readable", "r", false, "Human readable file size")
+	Cmd.Flags().BoolVarP(&long, "long", "l", false, "Use long listing format")
+	Cmd.Flags().BoolVarP(&all, "all", "a", false, "Do not ignore entries starting with .")
+	Cmd.Flags().BoolVarP(&readable, "readable", "r", false, "Human readable file size")
 }
 
 // BUG: panic when trying to read files like swapfile.sys
-var LsCmd = &cobra.Command{
+var Cmd = &cobra.Command{
 	Use:     "ls [OPTIONS] [FILEs]",
 	Short:   "ls lists all files in directory",
 	Long:    `ls lists all files in directory`,

@@ -32,12 +32,12 @@ var (
 )
 
 func init() {
-	GrepCmd.Flags().BoolVarP(&lineNumbers, "line-number", "n", false, "Prefix each found line with number")
-	GrepCmd.Flags().BoolVarP(&lineCount, "line-count", "c", false, "Output line count")
-	GrepCmd.Flags().BoolVarP(&recursive, "recursive", "r", false, "Recursive search in directory")
+	Cmd.Flags().BoolVarP(&lineNumbers, "line-number", "n", false, "Prefix each found line with number")
+	Cmd.Flags().BoolVarP(&lineCount, "line-count", "c", false, "Output line count")
+	Cmd.Flags().BoolVarP(&recursive, "recursive", "r", false, "Recursive search in directory")
 }
 
-var GrepCmd = &cobra.Command{
+var Cmd = &cobra.Command{
 	Use:     "grep [PATTERN] [FILE]",
 	Short:   "Grep searches for pattern in given file",
 	Long:    `Grep searches for pattern in given file`,
