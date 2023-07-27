@@ -9,7 +9,17 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func init() {}
+var (
+	// Prefix each found line with number
+	lineNumber bool
+	// Number nonempty output lines. overrides -n
+	nonBlank bool
+)
+
+func init() {
+	Cmd.Flags().BoolVarP(&lineNumber, "number", "n", false, "Prefix each found line with number")
+	Cmd.Flags().BoolVarP(&nonBlank, "number-nonblank", "b", false, "Number nonempty output lines. overrides -n")
+}
 
 var Cmd = &cobra.Command{
 	Use:     "cat [FILE]",
@@ -20,20 +30,32 @@ var Cmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		name := args[0]
 
-		res, err := printFile(name)
+		res, err := getFileData(name)
 
 		if err != nil {
 			log.Fatal(err)
 		}
 
-		for _, v := range res {
-			fmt.Println(v)
+		for i, v := range res {
+			output := v
+
+			if lineNumber && !nonBlank {
+				output = fmt.Sprintf("%d\t%s", i+1, output)
+			}
+
+			if nonBlank {
+				if v != "" {
+					output = fmt.Sprintf("%d\t%s", i+1, output)
+				}
+			}
+
+			fmt.Println(output)
 		}
 
 	},
 }
 
-func printFile(name string) ([]string, error) {
+func getFileData(name string) ([]string, error) {
 	file, err := os.Open(name)
 
 	if err != nil {

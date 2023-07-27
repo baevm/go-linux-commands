@@ -9,6 +9,7 @@ import (
 	"github.com/dezzerlol/go-linux-commands/cmd/mkdir"
 	"github.com/dezzerlol/go-linux-commands/cmd/pwd"
 	"github.com/dezzerlol/go-linux-commands/cmd/rmdir"
+	"github.com/dezzerlol/go-linux-commands/cmd/touch"
 	"github.com/spf13/cobra"
 )
 
@@ -26,6 +27,7 @@ func Execute() {
 	RootCmd.AddCommand(mkdir.Cmd)
 	RootCmd.AddCommand(rmdir.Cmd)
 	RootCmd.AddCommand(cat.Cmd)
+	RootCmd.AddCommand(touch.Cmd)
 
 	if err := RootCmd.Execute(); err != nil {
 		log.Fatal(err)
