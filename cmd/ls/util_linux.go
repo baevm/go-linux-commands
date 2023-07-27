@@ -9,11 +9,14 @@ import (
 	"log"
 	"os"
 	"os/user"
+	"path/filepath"
 	"syscall"
 )
 
-func countLinks(dirPath string) (int, error) {
-	fi, err := os.Stat(dirPath)
+func countLinks(path string, filename string) (int, error) {
+	fullpath := filepath.Join(path, filename)
+
+	fi, err := os.Stat(fullpath)
 
 	if err != nil {
 		fmt.Println(err)

@@ -5,7 +5,6 @@ import (
 	"log"
 	"math"
 	"os"
-	"path/filepath"
 	"strings"
 	"text/tabwriter"
 
@@ -76,6 +75,8 @@ var Cmd = &cobra.Command{
 			output := fmt.Sprintf("%s\t", f.name)
 			var fileSize interface{}
 
+			// Format to human readable file size
+			// if readable flag set
 			if readable {
 				fileSize = prettyByteSize(int(f.size))
 			} else {
@@ -121,6 +122,8 @@ func listFiles(path string) ([]File, error) {
 		permission := info.Mode().Perm().String()
 		fileName := d.Name()
 
+		// if file is hidden and all flag is not set
+		// skip file
 		if fileName[0] == '.' && !all {
 			continue
 		}
@@ -134,7 +137,7 @@ func listFiles(path string) ([]File, error) {
 		}
 
 		if d.Type().IsDir() {
-			links, err := countLinks(filepath.Join(path, d.Name()))
+			links, err := countLinks(path, d.Name())
 
 			if err != nil {
 				log.Println(err)
