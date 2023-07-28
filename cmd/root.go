@@ -7,6 +7,7 @@ import (
 	"github.com/dezzerlol/go-linux-commands/cmd/grep"
 	"github.com/dezzerlol/go-linux-commands/cmd/ls"
 	"github.com/dezzerlol/go-linux-commands/cmd/mkdir"
+	"github.com/dezzerlol/go-linux-commands/cmd/ping"
 	"github.com/dezzerlol/go-linux-commands/cmd/pwd"
 	"github.com/dezzerlol/go-linux-commands/cmd/rmdir"
 	"github.com/dezzerlol/go-linux-commands/cmd/touch"
@@ -28,6 +29,7 @@ func Execute() {
 	RootCmd.AddCommand(rmdir.Cmd)
 	RootCmd.AddCommand(cat.Cmd)
 	RootCmd.AddCommand(touch.Cmd)
+	RootCmd.AddCommand(ping.Cmd)
 
 	if err := RootCmd.Execute(); err != nil {
 		log.Fatal(err)
